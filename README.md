@@ -1,2 +1,1 @@
-# aws-lambda-swoole-runtime
-A Swoole runtime for AWS Lambda
+# Swoole Runtime for AWS Lambda
