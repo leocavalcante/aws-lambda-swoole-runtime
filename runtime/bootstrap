@@ -1,0 +1,35 @@
+#!/var/lang/bin/php
+<?php declare(strict_types=1);
+
+use Laminas\Diactoros\Request;
+use Psr\Http\Message\ResponseInterface;
+use Swoole\Coroutine as Co;
+
+const NEXT_INVOCATION = '/2018-06-01/runtime/invocation/next';
+const INVOCATION_RESPONSE = "/2018-06-01/runtime/invocation/%s/response";
+
+$handler = $_ENV['_HANDLER'];
+$task_root = $_ENV['LAMBDA_TASK_ROOT'];
+
+[$handler_file, $handler_fn] = explode('.', $handler);
+
+require_once "$task_root/$handler_file.php";
+
+Co\run(static function() use ($handler_fn): void {
+    $runtime_api = new Co\Http\Client($_ENV['AWS_LAMBDA_RUNTIME_API']);
+
+    while (true) {
+        $runtime_api->get(NEXT_INVOCATION);
+        $invocation_id = $runtime_api->headers['Lambda-Runtime-Aws-Request-Id'];
+
+        $request = new Request('/', 'POST', $runtime_api->getBody(), $runtime_api->getHeaders());
+        /** @var ResponseInterface $response */
+        $response = $handler_fn($request);
+
+        $runtime_api->post(sprintf(INVOCATION_RESPONSE, $invocation_id), json_encode([
+            'statusCode' => $response->getStatusCode(),
+            'headers' => $response->getHeaders(),
+            'body' => $response->getBody(),
+        ], JSON_THROW_ON_ERROR));
+    }
+});
