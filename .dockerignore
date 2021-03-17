@@ -1,2 +1,5 @@
 **
 !runtime/bootstrap
+!runtime/composer.*
+!task/index.php
+!php.ini

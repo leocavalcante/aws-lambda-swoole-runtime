@@ -1,11 +1,6 @@
 services:
-  runtime:
+  lambda:
     build: .
-    entrypoint:  /var/runtime/bootstrap
     ports:
       - 9000:9000
-    volumes:
-      - ./examples/:/var/task/
-    environment:
-      _HANDLER: lambda.main
 

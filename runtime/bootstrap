@@ -5,26 +5,31 @@ use Laminas\Diactoros\Request;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Coroutine as Co;
 
+require_once __DIR__ . '/vendor/autoload.php';
+
 const NEXT_INVOCATION = '/2018-06-01/runtime/invocation/next';
 const INVOCATION_RESPONSE = "/2018-06-01/runtime/invocation/%s/response";
 
-$handler = $_ENV['_HANDLER'];
-$task_root = $_ENV['LAMBDA_TASK_ROOT'];
+$handler = getenv('_HANDLER') ?: 'index';
+$task_root = getenv('LAMBDA_TASK_ROOT') ?: '/var/task';
+$runtime_api_url = getenv('AWS_LAMBDA_RUNTIME_API') ?: 'http://localhost:9000';
 
-[$handler_file, $handler_fn] = explode('.', $handler);
+$runtime_api_scheme = parse_url($runtime_api_url, PHP_URL_SCHEME);
+$runtime_api_host = parse_url($runtime_api_url, PHP_URL_HOST);
+$runtime_api_port = parse_url($runtime_api_url, PHP_URL_PORT);
 
-require_once "$task_root/$handler_file.php";
+$runtime_api = new Co\Http\Client($runtime_api_host, $runtime_api_port, ssl: $runtime_api_scheme === 'https');
 
-Co\run(static function() use ($handler_fn): void {
-    $runtime_api = new Co\Http\Client($_ENV['AWS_LAMBDA_RUNTIME_API']);
+require_once "$task_root/$handler.php";
 
+Co\run(static function() use ($runtime_api): void {
     while (true) {
         $runtime_api->get(NEXT_INVOCATION);
         $invocation_id = $runtime_api->headers['Lambda-Runtime-Aws-Request-Id'];
 
-        $request = new Request('/', 'POST', $runtime_api->getBody(), $runtime_api->getHeaders());
+        $request = new Request('/', 'POST', $runtime_api->getBody() ?? '', $runtime_api->getHeaders() ?? []);
         /** @var ResponseInterface $response */
-        $response = $handler_fn($request);
+        $response = main($request);
 
         $runtime_api->post(sprintf(INVOCATION_RESPONSE, $invocation_id), json_encode([
             'statusCode' => $response->getStatusCode(),
