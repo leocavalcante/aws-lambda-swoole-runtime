@@ -1,0 +1,22 @@
+{
+    "name": "leocavalcante/aws-lambda-swoole-runtime",
+    "description": "A Swoole runtime for AWS Lambda",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "leocavalcante",
+            "email": "lc@leocavalcante.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "swoole/ide-helper": "^4.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Runtime\\": "src/"
+        }
+    }
+}

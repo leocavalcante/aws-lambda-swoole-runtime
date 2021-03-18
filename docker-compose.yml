@@ -1,6 +1,12 @@
 services:
   lambda:
     build: .
+    volumes:
+      - ./aws-lambda-rie:/aws-lambda-rie
+      - ./var/runtime/:/var/runtime/
+      - ./var/task/:/var/task/
+    entrypoint:
+      - /aws-lambda-rie
     ports:
-      - 9000:9000
+      - 9000:8080
 

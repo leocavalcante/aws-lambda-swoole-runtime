@@ -1,5 +1,3 @@
 **
-!runtime/bootstrap
-!runtime/composer.*
-!task/index.php
-!php.ini
+!/var/**
+/var/runtime/vendor/
