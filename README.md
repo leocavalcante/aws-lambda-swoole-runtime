@@ -112,5 +112,7 @@ You can use the Web UI to create a **Function** based on it:
 ![Create function screenshot](create-function-screenshot.gif)
 
 ---
-
-<center>&copy; MIT 2021-today</center>
+<p align="center">
+MIT License<br>
+Copyright (c) 2021 Leo Cavalcante
+</p>
