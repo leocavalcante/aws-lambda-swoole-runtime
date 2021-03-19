@@ -1,23 +1,17 @@
 #!/usr/local/bin/php
 <?php declare(strict_types=1);
 
-use Laminas\Diactoros\Request;
-use Swoole\Coroutine as Co;
+$_ENV['LAMBDA_TASK_ROOT'] ??= '/var/task';
+$_ENV['_HANDLER'] ??= 'index';
 
+require_once "{$_ENV['LAMBDA_TASK_ROOT']}/{$_ENV['_HANDLER']}.php";
 require_once __DIR__ . '/vendor/autoload.php';
-
-$handler = getenv('_HANDLER') ?: 'index';
-$task_root = getenv('LAMBDA_TASK_ROOT') ?: '/var/task';
-require_once "$task_root/$handler.php";
-
 $api = new Runtime\API($_ENV['AWS_LAMBDA_RUNTIME_API']);
 
 Co\run(static function() use ($api): void {
     while (true) {
-        $context = $api->next();
-
         try {
-            $api->response(main($context));
+            $api->response(main($api->next()));
         } catch (\Throwable $err) {
             $api->error($err);
         }

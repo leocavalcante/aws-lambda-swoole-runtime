@@ -22,14 +22,19 @@ final class API
         $this->client->setHeaders(['Content-type' => 'application/json']);
     }
 
-    public function next(): Context
+    public function next(): array
     {
         $this->client->get('/2018-06-01/runtime/invocation/next');
         $this->requestId = $this->client->headers[self::REQUEST_ID_HEADER];
-        return new Context(
-            $this->requestId,
-            json_decode($this->client->body, true, 512, JSON_THROW_ON_ERROR),
-        );
+
+        $context = json_decode($this->client->body, true, 512, JSON_THROW_ON_ERROR);
+
+        if (!is_array($context)) {
+            $context = ['payload' => $context];
+        }
+
+        $context['request_id'] = $this->requestId;
+        return $context;
     }
 
     public function response(JsonSerializable|string|array|int|float $data): void

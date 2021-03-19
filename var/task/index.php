@@ -1,9 +1,7 @@
 <?php declare(strict_types=1);
 
-use Runtime\Context;
-
-function main(Context $context): string
+function main(array $context): string
 {
-    $greet = $context->payload['greet'] ?? 'World';
-    return "Hello, $greet!";
+    $context['greet'] ??= 'World';
+    return "Hello, {$context['greet']}!";
 }
