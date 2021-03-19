@@ -1,4 +1,4 @@
-# Swoole Runtime for AWS Lambda
+# λ Swoole Runtime for AWS Lambda
 
 Run PHP Coroutines & Fibers as-a-Service on the AWS Lambda.
 
