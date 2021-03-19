@@ -1,0 +1,17 @@
+{
+    "name": "leocavalcante/aws-lambda-swoole-runtime-example",
+    "description": "A Swoole runtime example for AWS Lambda",
+    "type": "project",
+    "require-dev": {
+        "swoole/ide-helper": "^4.6"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "leocavalcante",
+            "email": "lc@leocavalcante.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

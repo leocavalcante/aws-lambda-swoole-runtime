@@ -1,0 +1,11 @@
+services:
+  example:
+    build: .
+    volumes:
+      - ./:/var/task/
+      - ./aws-lambda-rie:/aws-lambda-rie
+    entrypoint:
+      - /aws-lambda-rie
+    ports:
+      - 9000:8080
+
